@@ -1,0 +1,102 @@
+<?php
+
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Dorn\Books\ViewModel\Books\Grid $viewModel
+ */
+$viewModel = $block->getViewModel();
+$books = array_values($viewModel->getBooksCollection());
+?>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th><?= __('Title') ?></th>
+            <th><?= __('Author') ?></th>
+            <th><?= __('Price') ?></th>
+            <th><?= __('Pages') ?></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if ($books) : ?>
+            <?php foreach ($books as $i => $book): ?>
+                <tr>
+                    <td>
+                        <?= $i + 1 ?>
+                    </td>
+                    <td>
+                        <?= $escaper->escapeHtml($book->getTitle()) ?>
+                    </td>
+                    <td>
+                        <?= $escaper->escapeHtml($book->getAuthor()) ?>
+                    </td>
+                    <td>
+                        <?= $book->getPrice() ?>
+                    </td>
+                    <td>
+                        <?= $book->getPages() ?>
+                    </td>
+                    <td>
+                        <a
+                            class="action primary"
+                            href="<?= $block->getUrl('books/index/edit', ['id' => $book->getId()]) ?>"
+                        >
+                            <?= __('Edit Book') ?>
+                        </a>
+                    </td>
+                    <td>
+                        <a
+                            class="action primary"
+                            data-book
+                            href="<?= $block->getUrl('books/index/delete', ['id' => $book->getId()]) ?>"
+                        >
+                            <?= __('Delete Book') ?>
+                        </a>
+                    </td>
+                </tr>
+            <?php endforeach ?>
+
+        <?php else: ?>
+            <tr>
+                <td colspan="7"><?= __('No books yet') ?>.</td>
+            </tr>
+        <?php endif ?>
+    </tbody>
+</table><br>
+
+<a
+    class="action primary"
+    href="<?= $block->getUrl('books/index/create') ?>"
+>
+    <?= __('Add New Book') ?>
+</a>
+
+<script>
+    require([
+            'jquery',
+            'Magento_Ui/js/modal/confirm'
+        ],
+        function ($, confirmation) {
+            $('[data-book]').on('click', function (e) {
+                e.preventDefault();
+                confirmation({
+                    title: 'Delete Book',
+                    content: 'Do you want to delete this book?',
+                    actions: {
+
+                        confirm: () => {
+                            return location = this.href;
+                        },
+
+                        cancel: function () {
+                            return false;
+                        }
+                    }
+                });
+            });
+        });
+</script>
